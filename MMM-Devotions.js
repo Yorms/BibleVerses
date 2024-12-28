@@ -1,6 +1,6 @@
 Module.register("MMM-Devotions", {
     defaults: {
-        apiUrl: "http://developer.enewhope.org/api/bible.php?", // Replace with your API URL
+        apiUrl: "http://developer.enewhope.org/api/bible.php>Online Devotions", // Replace with your API URL
         apiKey: "", // Optional: API key for authentication
         updateInterval: 1000 * 60 * 60, // Update every hour
         morningTime: 6,
