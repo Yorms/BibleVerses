@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 
 module.exports = NodeHelper.create({
     start: function () {
-        console.log("Starting node helper for MMM-DailyDevotional...");
+        console.log("Starting node helper for MMM-Devotional...");
     },
 
     socketNotificationReceived: function (notification, payload) {
