@@ -1,1 +1,1 @@
-# BibleVerses
+# MML-BibleVerses
