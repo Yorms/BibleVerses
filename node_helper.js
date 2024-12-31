@@ -1,5 +1,4 @@
 const NodeHelper = require("node_helper");
-const fetch = require("node-fetch");
 
 module.exports = NodeHelper.create({
     start: function () {
@@ -8,19 +7,27 @@ module.exports = NodeHelper.create({
 
     socketNotificationReceived: async function (notification, payload) {
         if (notification === "FETCH_DEVOTIONAL") {
-            this.fetchDevotional(payload.apiUrl, payload.apiKey);
+            this.fetchDevotional(payload.apiUrl, payload.apiKey, payload.originUrl);
         }
     },
 
-    fetchDevotional: async function (apiUrl, apiKey) {
+    fetchDevotional: async function (apiUrl, apiKey, originUrl) {
         console.log("Fetching devotional data from BrowseAI API...");
+
         try {
+            // Use dynamic import to fetch `fetch` function if required
+            const { fetch } = globalThis; // Use native fetch if available
+            if (!fetch) {
+                globalThis.fetch = (await import("node-fetch")).default;
+            }
+
             const response = await fetch(apiUrl, {
-                method: "GET",
+                method: "POST",
                 headers: {
                     "Authorization": `Bearer ${apiKey}`,
                     "Content-Type": "application/json",
                 },
+                body: JSON.stringify({ input: { originUrl } }),
             });
 
             if (!response.ok) {
@@ -30,7 +37,7 @@ module.exports = NodeHelper.create({
             const body = await response.json();
             console.log("Raw API response:", body);
 
-            // Extract devotional content from the API response
+            // Parse devotional text from the API response
             const devotionalText = this.parseDevotional(body);
             this.sendSocketNotification("DEVOTIONAL_RESULT", { text: devotionalText });
         } catch (error) {
@@ -40,7 +47,7 @@ module.exports = NodeHelper.create({
     },
 
     parseDevotional: function (data) {
-        // Update based on BrowseAI response structure
+        // Extract devotional text based on BrowseAI response structure
         if (data && data.results && data.results.length > 0) {
             return data.results[0].text || "No devotional text available.";
         }
